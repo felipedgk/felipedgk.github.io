@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uhm...</title>
+    <style>
+        /* Reseta e centraliza tudo na tela */
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column; /* Para alinhar a frase abaixo */
+            background-color: #f0f0f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.4s ease;
+        }
+
+        /* Estilo para o modo escuro */
+        body.dark {
+            background-color: #1c1c1c;
+        }
+
+        /* O container do interruptor */
+        .switch {
+            width: 120px;
+            height: 60px;
+            background-color: #ccc;
+            border-radius: 30px;
+            position: relative;
+            cursor: pointer;
+            border: 2px solid #b3b3b3;
+            transition: background-color 0.4s ease;
+        }
+
+        body.dark .switch {
+            background-color: #444;
+            border-color: #333;
+        }
+
+        /* O círculo que se move */
+        .handle {
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            transition: left 0.4s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Posição do círculo quando está "ligado" */
+        .switch.on .handle {
+            left: 65px; /* 120px (largura total) - 50px (círculo) - 5px (margem) */
+        }
+        
+        /* A famosa frase */
+        #frase-final {
+            margin-top: 30px;
+            font-size: 22px;
+            color: #aaa;
+            /* Começa invisível */
+            opacity: 0;
+            transition: opacity 0.8s ease 0.5s; /* Transição suave depois de um delay */
+        }
+
+        body.dark #frase-final {
+            color: #555;
+        }
+
+        /* Classe para tornar a frase visível */
+        #frase-final.visible {
+            opacity: 1;
+        }
+
+    </style>
+</head>
+<body id="corpo">
+
+    <div id="interruptor" class="switch">
+        <div class="handle"></div>
+    </div>
+
+    <p id="frase-final">É ISSO</p>
+
+    <script>
+        // Pega os elementos da página que vamos manipular
+        const interruptor = document.getElementById('interruptor');
+        const corpo = document.getElementById('corpo');
+        const fraseFinal = document.getElementById('frase-final');
+
+        // Adiciona um "ouvinte" de clique no interruptor
+        interruptor.addEventListener('click', () => {
+            // Alterna a classe 'on' no interruptor (para mover o círculo)
+            interruptor.classList.toggle('on');
+            
+            // Alterna a classe 'dark' no corpo da página (para mudar a cor de fundo)
+            corpo.classList.toggle('dark');
+            
+            // Adiciona a classe 'visible' na frase. Como não usamos 'toggle',
+            // ela vai aparecer no primeiro clique e nunca mais sumir.
+            fraseFinal.classList.add('visible');
+        });
+    </script>
+</body>
+</html>
