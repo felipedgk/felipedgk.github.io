@@ -3,27 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uhm...</title>
+    <title>Painel de Controle</title>
     <style>
-        /* Reseta e centraliza tudo na tela */
+        /* Estilo do corpo e centralização */
         body {
             margin: 0;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column; /* Para alinhar a frase abaixo */
+            flex-direction: column;
             background-color: #f0f0f0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: background-color 0.4s ease;
+            padding: 20px;
+            box-sizing: border-box;
+            gap: 40px; /* Espaçamento entre os elementos */
         }
 
-        /* Estilo para o modo escuro */
+        /* Modo escuro */
         body.dark {
             background-color: #1c1c1c;
         }
 
-        /* O container do interruptor */
+        /* --- Interruptor (código antigo) --- */
         .switch {
             width: 120px;
             height: 60px;
@@ -34,13 +37,10 @@
             border: 2px solid #b3b3b3;
             transition: background-color 0.4s ease;
         }
-
         body.dark .switch {
             background-color: #444;
             border-color: #333;
         }
-
-        /* O círculo que se move */
         .handle {
             width: 50px;
             height: 50px;
@@ -52,59 +52,166 @@
             transition: left 0.4s ease;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-
-        /* Posição do círculo quando está "ligado" */
         .switch.on .handle {
-            left: 65px; /* 120px (largura total) - 50px (círculo) - 5px (margem) */
+            left: 65px;
         }
-        
-        /* A famosa frase */
         #frase-final {
-            margin-top: 30px;
             font-size: 22px;
             color: #aaa;
-            /* Começa invisível */
             opacity: 0;
-            transition: opacity 0.8s ease 0.5s; /* Transição suave depois de um delay */
+            transition: opacity 0.8s ease 0.5s;
+            position: absolute; /* Posição absoluta para não empurrar outros elementos */
+            top: calc(50% + 70px); /* Ajusta a posição abaixo do interruptor */
         }
-
         body.dark #frase-final {
             color: #555;
         }
-
-        /* Classe para tornar a frase visível */
         #frase-final.visible {
             opacity: 1;
+        }
+        .switch-container {
+            position: relative; /* Container para a frase não atrapalhar o layout */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* --- Estilos para os novos elementos --- */
+
+        /* Botão Carregar */
+        .load-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: white;
+            margin-bottom: 15px;
+            transition: background-color 0.2s;
+        }
+        .load-button:hover {
+            background-color: #0056b3;
+        }
+        body.dark .load-button {
+            background-color: #5865f2;
+        }
+         body.dark .load-button:hover {
+            background-color: #4752c4;
+        }
+
+        /* Container da Barra de Progresso */
+        .progress-container {
+            width: 80%;
+            max-width: 400px;
+            background-color: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden; /* Garante que a barra interna não passe da borda */
+        }
+        body.dark .progress-container {
+            background-color: #444;
+        }
+
+        /* Barra de Progresso */
+        .progress-bar {
+            width: 0%; /* Começa em 0 */
+            height: 30px;
+            background-color: #28a745;
+            transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1); /* Animação suave */
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Container do Checkbox */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #555;
+            transition: opacity 0.5s ease; /* Animação de desaparecimento */
+        }
+        body.dark .checkbox-container {
+            color: #bbb;
+        }
+        .checkbox-container input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .checkbox-container label {
+            cursor: pointer;
         }
 
     </style>
 </head>
 <body id="corpo">
 
-    <div id="interruptor" class="switch">
-        <div class="handle"></div>
+    <div class="switch-container">
+        <div id="interruptor" class="switch">
+            <div class="handle"></div>
+        </div>
+        <p id="frase-final">É ISSO</p>
     </div>
 
-    <p id="frase-final">É ISSO</p>
+    <div class="progress-section">
+        <button id="loadButton" class="load-button">Carregar</button>
+        <div class="progress-container">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+    </div>
+    
+    <div id="promiseContainer" class="checkbox-container">
+        <input type="checkbox" id="promiseCheckbox">
+        <label for="promiseCheckbox">Eu prometo não fazer mais nada produtivo hoje</label>
+    </div>
 
     <script>
-        // Pega os elementos da página que vamos manipular
+        // --- Lógica do Interruptor (código antigo) ---
         const interruptor = document.getElementById('interruptor');
         const corpo = document.getElementById('corpo');
         const fraseFinal = document.getElementById('frase-final');
-
-        // Adiciona um "ouvinte" de clique no interruptor
         interruptor.addEventListener('click', () => {
-            // Alterna a classe 'on' no interruptor (para mover o círculo)
             interruptor.classList.toggle('on');
-            
-            // Alterna a classe 'dark' no corpo da página (para mudar a cor de fundo)
             corpo.classList.toggle('dark');
-            
-            // Adiciona a classe 'visible' na frase. Como não usamos 'toggle',
-            // ela vai aparecer no primeiro clique e nunca mais sumir.
             fraseFinal.classList.add('visible');
         });
+
+        // --- Lógica para os novos elementos ---
+
+        // Barra de Progresso
+        const loadButton = document.getElementById('loadButton');
+        const progressBar = document.getElementById('progressBar');
+        loadButton.addEventListener('click', () => {
+            // Primeiro, reseta a barra para 0%
+            progressBar.style.width = '0%';
+            progressBar.textContent = '';
+            
+            // Gera um número aleatório entre 1 e 99
+            const randomPercent = Math.floor(Math.random() * 99) + 1;
+
+            // Usa um pequeno delay para a animação de reset ser visível antes da nova animação
+            setTimeout(() => {
+                progressBar.style.width = randomPercent + '%';
+                progressBar.textContent = randomPercent + '%';
+            }, 150);
+        });
+
+        // Checkbox que desaparece
+        const promiseContainer = document.getElementById('promiseContainer');
+        const promiseCheckbox = document.getElementById('promiseCheckbox');
+        promiseCheckbox.addEventListener('change', () => {
+            if (promiseCheckbox.checked) {
+                // Some com o container do checkbox suavemente
+                promiseContainer.style.opacity = '0';
+                setTimeout(() => {
+                    promiseContainer.style.display = 'none';
+                }, 500); // Mesmo tempo da transição no CSS
+            }
+        });
+
     </script>
 </body>
 </html>
